@@ -6,6 +6,7 @@ var logger = require("morgan");
 
 //----------------------------------------------------------------
 const UserRouter = require("./routes/admin/UserRouter");
+const JWT = require('./util/JWT');
 //----------------------------------------------------------------
 
 var indexRouter = require("./routes/index");
@@ -27,6 +28,28 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
 //----------------------------------------------------------------
+app.use((req, res, next) => {
+  if (req.url === "/adminapi/user/login") {
+    next();
+    return;
+  }
+
+  const token = req.headers["authorization"].split(" ")[1];
+  if (token) {
+    const payload = JWT.verify(token);
+    if (payload) {
+      // const newToken = JWT.generate({
+      //   _id:payload._id,
+      //   username:payload.username
+      // },"1d")
+      // res.header("Authorization",newToken)
+      next();
+    } else {
+      res.status(401).send({ errCode: "-1", errorInfo: "token过期" });
+    }
+  }
+});
+
 app.use(UserRouter);
 //----------------------------------------------------------------
 
