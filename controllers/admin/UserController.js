@@ -16,7 +16,7 @@ const UserController = {
           _id: result[0]._id,
           username: result[0].username,
         },
-        "10s"
+        "1d"
       );
       res.header("Authorization", token);
       res.send({
@@ -27,6 +27,44 @@ const UserController = {
           introduction: result[0].introduction,
           avatar: result[0].avatar,
           role: result[0].role,
+        },
+      });
+    }
+  },
+
+  upload: async (req, res) => {
+    const { username, introduction, gender, avatar: avatarUrl } = req.body;
+    const avatar = req.file
+      ? `/avatar_uploads/${req.file.filename}`
+      : avatarUrl;
+    const token = req.headers["authorization"].split(" ")[1];
+    const payload = JWT.verify(token);
+
+    await UserService.upload({
+      _id: payload._id,
+      username,
+      introduction,
+      gender: Number(gender),
+      avatar,
+    });
+
+    if (avatar) {
+      res.send({
+        ActionType: "OK",
+        data: {
+          username,
+          introduction,
+          gender: Number(gender),
+          avatar,
+        },
+      });
+    } else {
+      res.send({
+        ActionType: "OK",
+        data: {
+          username,
+          introduction,
+          gender: Number(gender),
         },
       });
     }
