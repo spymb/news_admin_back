@@ -13,4 +13,20 @@ UserRouter.post(
   UserController.upload
 );
 
+UserRouter.post(
+  "/adminapi/user/add",
+  upload.single("file"),
+  UserController.add
+);
+
+UserRouter.delete("/adminapi/user/list/:id", UserController.delete);
+
+UserRouter.put(
+  "/adminapi/user/list/:id",
+  upload.single("file"),
+  UserController.put
+);
+
+UserRouter.get("/adminapi/user/list", UserController.getList);
+
 module.exports = UserRouter;

@@ -69,6 +69,56 @@ const UserController = {
       });
     }
   },
+
+  add: async (req, res) => {
+    const {
+      username,
+      password,
+      role,
+      gender,
+      introduction,
+      avatar: avatarUrl,
+    } = req.body;
+    const avatar = req.file
+      ? `/avatar_uploads/${req.file.filename}`
+      : avatarUrl;
+    await UserService.add({
+      username,
+      password,
+      role: Number(role),
+      gender: Number(gender),
+      introduction,
+      avatar,
+    });
+    res.send({
+      ActionType: "OK",
+    });
+  },
+
+  delete: async (req, res) => {
+    await UserService.delete({ _id: req.params.id });
+    res.send({
+      ActionType: "OK",
+    });
+  },
+
+  put: async (req, res) => {
+    const avatar = req.file
+      ? `/avatar_uploads/${req.file.filename}`
+      : req.body.avatar;
+    await UserService.put({ ...req.body, avatar });
+    res.send({
+      ActionType: "OK",
+    });
+  },
+
+  getList: async (req, res) => {
+    const result = await UserService.getList();
+    res.send({
+      ActionType: "OK",
+      data: result,
+    });
+  },
 };
 
 module.exports = UserController;
